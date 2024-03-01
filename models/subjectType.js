@@ -12,7 +12,7 @@ const subjectTypeSchema = new Schema({
   preferedDay: { type: String },
   classroomTypes: {
     type: String,
-    enum: ["salle TP", "Labo", "Normale", "Amphie"],
+    enum: ["Amphie", "TP", "IT", "Cours", "labo"],
     required: true,
   }, //TODO : ajouter une référence vers la salle de ce type (cf labo)
   docs: { type: String },

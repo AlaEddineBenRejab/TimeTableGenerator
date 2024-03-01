@@ -39,7 +39,7 @@ const AddSubjectToProf = async (req, res) => {
   }
 };
 
-addClasstoProf = async (req, res) => {
+const addClasstoProf = async (req, res) => {
   const { username, className } = req.body;
   try {
     const prof = await User.findOne({ username: username });
@@ -50,11 +50,12 @@ addClasstoProf = async (req, res) => {
     if (!classe) {
       return res.status(400).json({ message: "Class does not exist" });
     }
-    console.log(classe);
-    prof.classes.push(classe._id);
-    await prof.save();
+
+    // Push prof ID to classe.profs array
     classe.profs.push(prof._id);
     await classe.save();
+    prof.calsses.push(classe._id);
+    await prof.save();
     console.log(classe.profs);
     return res.status(201).json(prof);
   } catch (err) {

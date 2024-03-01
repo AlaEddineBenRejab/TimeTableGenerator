@@ -1,17 +1,3 @@
-// translate time to minutes
-function timeToMinutes(time) {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + minutes;
-}
-
-// find if two periods of time are intersected
-
-function isIntersected(period1, period2) {
-  const [start1, end1] = period1.map(timeToMinutes);
-  const [start2, end2] = period2.map(timeToMinutes);
-  return Math.max(start1, start2) < Math.min(end1, end2);
-}
-
 function iterateTimeSlots(startTime, endTime, sessionDuration, pauseDuration) {
   const [startHour, startMinute] = startTime.split(":").map(Number);
   const [endHour, endMinute] = endTime.split(":").map(Number);
@@ -108,4 +94,32 @@ function loopWeekdays(
   return result;
 }
 
-module.exports = { isIntersected, iterateTimeSlots, loopWeekdays };
+function timeToMinutes(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function isIntersected(period, startTime, endTime) {
+  // Check if startTime or endTime is empty or undefined
+  if (!startTime || !endTime) {
+    return false;
+  }
+
+  const [start1, end1] = period.map(timeToMinutes);
+  const start2 = timeToMinutes(startTime);
+  const end2 = timeToMinutes(endTime);
+
+  return Math.max(start1, start2) < Math.min(end1, end2);
+}
+
+function timeToMinutesTimeTable(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+module.exports = {
+  isIntersected,
+  iterateTimeSlots,
+  loopWeekdays,
+  timeToMinutesTimeTable,
+};

@@ -24,7 +24,7 @@ const userSchema = new Schema({
   ],
   hourlyVolume: { type: Number },
   avaibility: [{ type: mongoose.Types.ObjectId, ref: "Session" }],
-  calsses: [{ type: mongoose.Types.ObjectId, ref: "Class", unique: true }],
+  classes: [{ type: mongoose.Types.ObjectId, ref: "Class", unique: true }],
 });
 
 module.exports = mongoose.model("User", userSchema, "User", { strict: false });

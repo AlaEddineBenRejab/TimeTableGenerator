@@ -277,3 +277,28 @@ loopWeekdays(
     }
   }
 );
+
+function timeToMinutes(time) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function isIntersected(period, startTime, endTime) {
+  // Check if startTime or endTime is empty or undefined
+  if (!startTime || !endTime) {
+    return false;
+  }
+
+  const [start1, end1] = period.map(timeToMinutes);
+  const start2 = timeToMinutes(startTime);
+  const end2 = timeToMinutes(endTime);
+
+  return Math.max(start1, start2) < Math.min(end1, end2);
+}
+
+// Example usage:
+const period = ["13:30", "15:00"];
+const startTime = "";
+const endTime = "";
+const intersections = isIntersected(period, startTime, endTime);
+console.log("Periods intersected:", intersections);

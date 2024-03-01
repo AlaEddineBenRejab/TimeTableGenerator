@@ -11,7 +11,7 @@ const ClassSchema = new Schema({
   },
   capacity: { type: Number, required: true },
   avaibility: [{ type: mongoose.Types.ObjectId, ref: "Session" }],
-  profs: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+  profs: [{ type: mongoose.Types.ObjectId, ref: "User", unique: true }],
   subjectTypes: [
     {
       subjectType: {
