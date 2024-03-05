@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 
 const timeTableSettingsSchema = new Schema({
   name: { type: String, unique: true, required: true },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
   startDay: {
     type: String,
     enum: [

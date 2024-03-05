@@ -171,7 +171,7 @@ const generateSessionsAutomatically = async (req, res) => {
                 nextPeriod &&
                 subjecttype.sessionTime ===
                   timeToMinutesTimeTable(nextPeriod[1]) -
-                    timeToMinutesTimeTable(nextPeriod[0]) -
+                    timeToMinutesTimeTable(nextPeriod[0]) +
                     timeToMinutesTimeTable(period[1]) -
                     timeToMinutesTimeTable(period[0])
               ) {
