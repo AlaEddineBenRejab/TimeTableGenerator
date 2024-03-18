@@ -112,4 +112,4 @@ function loopWeekdays(
   return selectedDays;
 }
 
-module.exports = loopWeekdays;
+module.exports = { loopWeekdays };

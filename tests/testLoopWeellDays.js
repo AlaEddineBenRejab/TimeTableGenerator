@@ -112,29 +112,10 @@ function loopWeekdays(
 
   return selectedDays;
 }
-/*
+
 // Define a callback function to use with loopWeekdays
 const callbackFunction = (day, date, slot) => {
   console.log(`${day} ${date}:\n${JSON.stringify(slot, null, 2)}`);
-};*/
-
-const callbackFunction = async (day, date, slot) => {
-  try {
-    // Create a new session object
-    const newSession = new Session({
-      sessionName: "YourSessionName", // Set an appropriate session name
-      date: date,
-      startTime: slot.startTime,
-      endTime: slot.endTime,
-      // Add other required fields such as timetable, classroom, prof, class, subjectType
-    });
-
-    // Save the new session to the database
-    const savedSession = await newSession.save();
-    console.log(`New session saved: ${savedSession}`);
-  } catch (error) {
-    console.error("Error creating session:", error);
-  }
 };
 
 // Define the array of days to skip (dayOffs)

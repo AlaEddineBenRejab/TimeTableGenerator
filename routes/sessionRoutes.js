@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {
   generateSessionsAutomatically,
-} = require("../controllers/sessionController");
+} = require("../controllers/sessionController1");
 
 router.post("/generateAutomaticTimeTable", generateSessionsAutomatically);
 

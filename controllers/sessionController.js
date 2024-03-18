@@ -9,7 +9,6 @@ const {
   iterateTimeSlots,
   timeToMinutesTimeTable,
 } = require("../utils/utilsTableGenerator");
-const SubjectType = require("../models/subjectType");
 
 const generateSessionsAutomatically = async (req, res) => {
   const { timeTableName, username } = req.body;
