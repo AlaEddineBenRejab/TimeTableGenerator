@@ -9,7 +9,13 @@ function loopWeekdays(
   firstSession,
   secondSession,
   dayOffs,
-  callback
+  callback,
+  firstSessionStartTime,
+  firstSessionEndTime,
+  secondSessionStartTime,
+  secondSessionEndTime,
+  sessionDuration,
+  slotDuration
 ) {
   const daysOfWeek = [
     "Sunday",
@@ -51,6 +57,49 @@ function loopWeekdays(
     ) {
       // Check if the current day is the selected day
       const isRemarkable = currentDate.getDay() === selectedDayIndex;
+
+      // If it's the selected day, use the appropriate session based on firstSession and secondSession flags
+      if (isRemarkable && firstSession) {
+        iterateTimeSlots(
+          firstSessionStartTime,
+          firstSessionEndTime,
+          sessionDuration,
+          slotDuration
+        )
+          .slice(0, 2)
+          .forEach((slot) => {
+            callback(dayOfWeek, currentDateStr, slot);
+          });
+      } else if (isRemarkable && secondSession) {
+        iterateTimeSlots(
+          secondSessionStartTime,
+          secondSessionEndTime,
+          sessionDuration,
+          slotDuration
+        )
+          .slice(0, 2)
+          .forEach((slot) => {
+            callback(dayOfWeek, currentDateStr, slot);
+          });
+      } else {
+        iterateTimeSlots(
+          firstSessionStartTime,
+          firstSessionEndTime,
+          sessionDuration,
+          slotDuration
+        ).forEach((slot) => {
+          callback(dayOfWeek, currentDateStr, slot);
+        });
+        iterateTimeSlots(
+          secondSessionStartTime,
+          secondSessionEndTime,
+          sessionDuration,
+          slotDuration
+        ).forEach((slot) => {
+          callback(dayOfWeek, currentDateStr, slot);
+        });
+      }
+
       selectedDays.push({
         day: dayOfWeek,
         date: currentDateStr,
@@ -59,60 +108,8 @@ function loopWeekdays(
     }
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  const result = {};
-  // Invoke the callback function for each selected day
-  selectedDays.forEach((day) => {
-    const periods = [];
 
-    callback(
-      day.day,
-      day.date,
-      day.remarkable,
-      firstSession,
-      secondSession,
-      (period) => {
-        periods.push(period);
-      }
-    );
-    result[day.day] = periods;
-  });
-  console.log(result);
-  return result;
+  return selectedDays;
 }
 
-// Define a callback function to use with loopWeekdays
-const callbackFunction = (
-  day,
-  date,
-  remarkable,
-  firstSession,
-  secondSession
-) => {
-  console.log(
-    `Selected day: ${day}, Date: ${date}, Remarkable: ${remarkable}, First Session: ${firstSession}, Second Session: ${secondSession}`
-  );
-};
-
-// Define the array of days to skip (dayOffs)
-const dayOffs = ["2024-09-18", "2024-09-25"]; // Example array of dates to skip
-
-// Call loopWeekdays with example parameters, including the selected day
-const startDate = "2024-09-15"; // Start date of the range
-const endDate = "2024-10-30"; // End date of the range
-const startWeekDay = "Monday"; // Start weekday of the week
-const endWeekDay = "Friday"; // End weekday of the week
-const selectedDay = "Wednesday"; // Selected remarkable day
-const firstSession = true; // Example of first session parameter
-const secondSession = false; // Example of second session parameter
-
-loopWeekdays(
-  startDate,
-  endDate,
-  startWeekDay,
-  endWeekDay,
-  selectedDay,
-  firstSession,
-  secondSession,
-  dayOffs,
-  callbackFunction
-);
+module.exports = loopWeekdays;

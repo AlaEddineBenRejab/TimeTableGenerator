@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const sessionSchema = new Schema({
   sessionName: { type: String, require: true },
+  date: { type: String, require: true },
   startTime: { type: String, require: true },
   endTime: { type: String, require: true },
   timetable: { type: mongoose.Types.ObjectId, ref: "TimeTable" },
