@@ -3,6 +3,7 @@ const Classroom = require("../models/classroom");
 const prof = require("../models/UserModel");
 const timeTableSettings = require("../models/timeTableSettings");
 const subjectType = require("../models/subjectType");
+const Classes = require("../models/class");
 
 const { loopWeekdays } = require("../utils/LoopWeekDays");
 const { isIntersected } = require("../utils/utilsTableGenerator");
@@ -64,6 +65,13 @@ const generateSessionsAutomatically = async (req, res) => {
           const sessionDuration = slot[1] - slot[0];
           if (subjectTypeObj.sessionTime === 2 * timeTableSetting.sessionTime) {
             // If subject duration is double the session time, generate two consecutive sessions with the same subject
+            let sessionStartTime;
+            if (firstSession) {
+              sessionStartTime = timeTableSetting.morningStart; // Morning session start time
+            } else {
+              sessionStartTime = timeTableSetting.afternoonStart; // Afternoon session start time
+            }
+
             const newSession1 = new Session({
               sessionName: `${professor.firstName} ${randomClass.name} ${subjectTypeObj.subject.name}`, // Use subject name
               date: date,
@@ -71,8 +79,8 @@ const generateSessionsAutomatically = async (req, res) => {
               classroom: classroom._id,
               class: randomClass._id,
               subjectType: subjectTypeId,
-              startTime: slot[0],
-              endTime: slot[0] + sessionDuration / 2, // Adjust end time for first session
+              startTime: sessionStartTime,
+              endTime: sessionStartTime + 3 * 60 * 1000, // 180 minutes in milliseconds
             });
             await newSession1.save();
             console.log(`New session saved: ${newSession1}`);
@@ -84,8 +92,8 @@ const generateSessionsAutomatically = async (req, res) => {
               classroom: classroom._id,
               class: randomClass._id,
               subjectType: subjectTypeId,
-              startTime: slot[0] + sessionDuration / 2, // Adjust start time for second session
-              endTime: slot[1],
+              startTime: sessionStartTime + 3 * 60 * 1000, // Start time of second session
+              endTime: sessionStartTime + 2 * 3 * 60 * 1000, // End time of second session
             });
             await newSession2.save();
             console.log(`New session saved: ${newSession2}`);
@@ -130,6 +138,98 @@ const generateSessionsAutomatically = async (req, res) => {
     timeTableSetting.pause
   );
   res.status(200);
+};
+
+const generateTimeTableManually = async (req, res) => {
+  const {
+    sessionName,
+    date,
+    day,
+    startTime,
+    endTime,
+    timetable,
+    salle,
+    profe,
+    classe,
+    subjectType,
+  } = req.body;
+
+  try {
+    // Find the classroom by ID and populate its sessions
+    const classroom = await Classroom.findById(salle).populate("avaibility");
+
+    if (!classroom) {
+      return res.status(404).json({ error: "Classroom not found." });
+    }
+
+    // Check if there's a conflicting session in the classroom
+    const classroomConflictingSession = classroom.avaibility.find((session) => {
+      return (
+        session.date === date &&
+        session.day === day &&
+        ((session.startTime >= startTime && session.startTime < endTime) ||
+          (session.endTime > startTime && session.endTime <= endTime) ||
+          (session.startTime <= startTime && session.endTime >= endTime))
+      );
+    });
+
+    if (classroomConflictingSession) {
+      return res.status(400).json({
+        error: "Conflicting session already exists in the classroom.",
+      });
+    }
+
+    const pofessor = await prof.findById(profe).populate("avaibility");
+
+    if (!pofessor) {
+      return res.status(404).json({ error: "Classroom not found." });
+    }
+
+    // Check if there's a conflicting session in the professor
+    const profConflictingSession = pofessor.avaibility.find((session) => {
+      return (
+        session.date === date &&
+        session.day === day &&
+        ((session.startTime >= startTime && session.startTime < endTime) ||
+          (session.endTime > startTime && session.endTime <= endTime) ||
+          (session.startTime <= startTime && session.endTime >= endTime))
+      );
+    });
+
+    if (profConflictingSession) {
+      return res.status(400).json({
+        error: "Conflicting session already exists in the classroom.",
+      });
+    }
+
+    const Classe = await classes.findById(classe).populate("avaibility");
+
+    if (!Classe) {
+      return res.status(404).json({ error: "Classroom not found." });
+    }
+
+    // Check if there's a conflicting session in the professor
+    const classeConflictingSession = Classe.avaibility.find((session) => {
+      return (
+        session.date === date &&
+        session.day === day &&
+        ((session.startTime >= startTime && session.startTime < endTime) ||
+          (session.endTime > startTime && session.endTime <= endTime) ||
+          (session.startTime <= startTime && session.endTime >= endTime))
+      );
+    });
+
+    if (classeConflictingSession) {
+      return res.status(400).json({
+        error: "Conflicting session already exists in the classroom.",
+      });
+    }
+
+    // Further logic...
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to generate timetable manually." });
+  }
 };
 
 module.exports = {
